@@ -1,0 +1,34 @@
+redis:
+  image: redis
+  volumes: 
+    - /var/redis:/data
+  command: redis-server --appendonly yes
+
+rabbitmq:
+  image: rabbitmq:management
+  hostname: my-rabbit
+  ports:
+    - 5672:5672
+    - 15672:15672
+
+rest:
+  build: helloworldrestmicroservice/
+  links:
+    - rabbitmq:rabbitmqalias
+    - redis:redisalias
+  ports:
+    - 8080:8080
+  environment:
+    REDIS_HOST: redisalias
+    RABBIT_MQ_HOST: rabbitmqalias
+
+web:
+  build: helloworldwebmicroservice
+  ports:
+    - 80:8080
+
+log:
+  build: helloworldlogmicroservice/
+  links:
+    - rabbitmq:rabbitmqalias
+  command: rabbitmqalias
