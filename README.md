@@ -37,7 +37,7 @@ $ docker-compose ps
 
 Open your favorite web browser and go to this URL: http://localhost
 
-To check if the **Log** microservice is working, display the console output
+To check if the **Log** microservice is working, display its console output
 
 ```shellscript
 $ docker logs log_1
