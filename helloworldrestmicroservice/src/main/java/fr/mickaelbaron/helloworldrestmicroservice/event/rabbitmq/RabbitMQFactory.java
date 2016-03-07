@@ -1,6 +1,10 @@
 package fr.mickaelbaron.helloworldrestmicroservice.event.rabbitmq;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeoutException;
 
 import javax.inject.Singleton;
@@ -15,15 +19,15 @@ import com.rabbitmq.client.ConnectionFactory;
 @Singleton
 public class RabbitMQFactory {
 
-	private static final String RABBIT_MQ_HOST_ENV_KEY = "RABBIT_MQ_HOST";
+	private static final String RABBIT_MQ_HOST_ENV_KEY = "RABBITMQALIAS_PORT_5672_TCP_ADDR";
 
 	public static final String EXCHANGE_NAME = "helloworld";
 
 	private Channel currentChanel;
 
-	public RabbitMQFactory() throws IOException, TimeoutException {
+	public RabbitMQFactory() throws IOException, TimeoutException, KeyManagementException, NoSuchAlgorithmException, URISyntaxException {
 		ConnectionFactory factory = new ConnectionFactory();
-		factory.setHost(getRabbitMQHost());
+		factory.setUri(getRedisURI());
 		Connection connection = factory.newConnection();
 		currentChanel = connection.createChannel();
 
@@ -33,14 +37,10 @@ public class RabbitMQFactory {
 	public Channel getChannel() {
 		return currentChanel;
 	}
-
-	private String getRabbitMQHost() {
-		String redisHost = System.getenv(RABBIT_MQ_HOST_ENV_KEY);
-
-		if (redisHost == null || redisHost.isEmpty()) {
-			return "localhost";
-		} else {
-			return redisHost;
-		}
+	
+	private URI getRedisURI() {
+		String hostVariable = System.getenv(RABBIT_MQ_HOST_ENV_KEY);
+		String hostValue = hostVariable != null && !hostVariable.isEmpty() ? "amqp://" + hostVariable + ":5672"	: "amqp://localhost:5672";
+		return URI.create(hostValue);
 	}
 }
