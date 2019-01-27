@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.16.0 (0c01309)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: rest
+  name: rest
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.service: rest
+    spec:
+      containers:
+      - env:
+        - name: RABBIT_MQ_HOST
+          value: rabbitmqalias
+        - name: REDIS_HOST
+          value: redisalias
+        image: sreesanpd/helloworldmicroservices_rest
+        name: rest
+        ports:
+        - containerPort: 8080
+        resources: {}
+      restartPolicy: Always
+status: {}
